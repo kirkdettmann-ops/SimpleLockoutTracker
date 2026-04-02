@@ -53,6 +53,11 @@ local function NormalizeName(str)
     for _, prefix in ipairs(prefixes) do
         str = string.gsub(str, prefix, "")
     end
+    -- Strip out confusing inner grammar that APIs interject
+    str = string.gsub(str, " of the ", " ")
+    str = string.gsub(str, " of ", " ")
+    str = string.gsub(str, " the ", " ")
+    
     -- Second pass to catch "The" if it was disguised behind a hub name (e.g., "Coilfang: The Underbog")
     str = string.gsub(str, "^the ", "")
     str = string.gsub(str, "%s+", " ")
@@ -163,9 +168,27 @@ local function ScanUI()
                                 if not current.lockoutPadlock then
                                     current.lockoutPadlock = CreatePadlock(current, region)
                                 end
-                                -- Ensure anchor dynamically points to the correct region
+                                
+                                -- Determine optimal anchoring (Left of the Level text if it exists, otherwise Right of Name)
+                                local anchorRegion = region
+                                for _, r in ipairs({current:GetRegions()}) do
+                                    if r:GetObjectType() == "FontString" and r ~= region then
+                                        local rText = r:GetText()
+                                        if rText and string.match(rText, "%(%d+%)") then
+                                            anchorRegion = r
+                                            break
+                                        end
+                                    end
+                                end
+                                
                                 current.lockoutPadlock:ClearAllPoints()
-                                current.lockoutPadlock:SetPoint("LEFT", region, "RIGHT", 4, 0)
+                                if anchorRegion == region then
+                                    current.lockoutPadlock:SetPoint("LEFT", anchorRegion, "RIGHT", 4, 0)
+                                else
+                                    -- Add negative right-bound padding so it sits snugly to the left of the level requirement text
+                                    current.lockoutPadlock:SetPoint("RIGHT", anchorRegion, "LEFT", -4, 0)
+                                end
+                                
                                 current.lockoutPadlock.lockoutInfo = matchedLockout
                                 current.lockoutPadlock:Show()
                                 
