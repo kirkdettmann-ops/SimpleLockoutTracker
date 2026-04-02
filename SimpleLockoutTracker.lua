@@ -169,25 +169,10 @@ local function ScanUI()
                                     current.lockoutPadlock = CreatePadlock(current, region)
                                 end
                                 
-                                -- Determine optimal anchoring (Left of the Level text if it exists, otherwise Right of Name)
-                                local anchorRegion = region
-                                for _, r in ipairs({current:GetRegions()}) do
-                                    if r:GetObjectType() == "FontString" and r ~= region then
-                                        local rText = r:GetText()
-                                        if rText and string.match(rText, "%(%d+%)") then
-                                            anchorRegion = r
-                                            break
-                                        end
-                                    end
-                                end
-                                
+                                -- Anchor padlock universally to a static rigid offset so they stack in a perfect column
+                                -- We dynamically position it ~230 pixels right of the checkbox, slipping it perfectly into the green margin!
                                 current.lockoutPadlock:ClearAllPoints()
-                                if anchorRegion == region then
-                                    current.lockoutPadlock:SetPoint("LEFT", anchorRegion, "RIGHT", 4, 0)
-                                else
-                                    -- Add negative right-bound padding so it sits snugly to the left of the level requirement text
-                                    current.lockoutPadlock:SetPoint("RIGHT", anchorRegion, "LEFT", -4, 0)
-                                end
+                                current.lockoutPadlock:SetPoint("LEFT", current, "LEFT", 225, 0) -- Change 225 to nudge padlock Left/Right!
                                 
                                 current.lockoutPadlock.lockoutInfo = matchedLockout
                                 current.lockoutPadlock:Show()
