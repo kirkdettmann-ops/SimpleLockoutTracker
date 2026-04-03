@@ -157,8 +157,13 @@ local function ScanUI()
                                 local normLockout = NormalizeName(lockoutName)
                                 -- Fuzzy match: check if either normalized string is contained within the other
                                 if normText ~= "" and normLockout ~= "" and (string.find(normText, normLockout, 1, true) or string.find(normLockout, normText, 1, true)) then
-                                    matchedLockout = lockoutData
-                                    break
+                                    -- Strict Override: Prevent Heroic lockouts from falsely triggering on Normal dungeon rows
+                                    if lockoutData.diffName == "Heroic" and not string.find(normText, "heroic", 1, true) then
+                                        -- Skip match
+                                    else
+                                        matchedLockout = lockoutData
+                                        break
+                                    end
                                 end
                             end
                             
