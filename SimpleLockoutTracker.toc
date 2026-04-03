@@ -1,8 +1,8 @@
-## Interface: 20504
+## Interface: 20505
 ## Title: Simple Lockout Tracker
 ## Notes: Adds a padlock icon and tooltip to locked out dungeons/raids in the LFG window.
 ## Author: Domilan
-## Version: 1.0
+## Version: 1.1.3
 ## X-Curse-Project-ID: 1501468
 
 SimpleLockoutTracker.lua
